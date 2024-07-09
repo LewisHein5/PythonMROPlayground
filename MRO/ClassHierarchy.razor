@@ -5,34 +5,86 @@
 @inject UpdateService classListUpdateService;
 <div @ref="_inheritanceGraph" style="flex: 1"></div>
 
+
 <ol>
+    @if (Linearization.Count() > 0)
+    {
+        <li>L(Object) = Object</li>
+    }
     @foreach (var step in LinearizationSteps.AsEnumerable())
     {
-    <li>
-        L(@step.Class.Name) = @step.Class.Name + merge(
-        @foreach (var classlist in step.ClassesList)
-        {
-        <span>
-                        [
-            @foreach (var className in classlist)
+        <li>
+            L(@step.Class.Name) = @step.Class.Name + merge(
+            @foreach (var classlist in step.ClassesList)
             {
-            if (className == classlist.Last())
-            {
-            @($" {className.Name} ")
+                <span>
+                    [
+                    @foreach (var className in classlist)
+                    {
+                        if (className == classlist.Last())
+                        {
+                            @($" {className.Name} ")
+                        }
+                        else
+                        {
+                            @($"{className.Name}, ")
+                        }
+                    }
+                    ]
+                </span>
             }
-            else
-            {
-            @($"{className.Name}, ")
-            }
-            }
-            ]
-                    </span>
-        }
-        )
-    </li>
+            )
+            <ul class="customBulletList">
+                @foreach (var mergeStep in step.MergeSteps)
+                {
+                    <li class="equalsBullet">
+                        [ @step.Class.Name,
+                        @foreach (var className in mergeStep.MergedClasses)
+                        {
+                            if (className == mergeStep.MergedClasses.Last())
+                            {
+                                @($" {className.Name} ")
+                            }
+                            else
+                            {
+                                @($"{className.Name}, ")
+                            }
+                        }
+                        ]
+                        @if (mergeStep.UnmergedClasses.Count > 0)
+                        {
+                            <span>
+                                + merge(
+                                @foreach (var classlist in mergeStep.UnmergedClasses)
+                                {
+                                    <span>
+                                        [
+                                        @foreach (var className in classlist)
+                                        {
+                                            if (className == classlist.Last())
+                                            {
+                                                @($" {className.Name} ")
+                                            }
+                                            else
+                                            {
+                                                @($"{className.Name}, ")
+                                            }
+                                        }
+                                        ]
+                                    </span>
+                                }
+                                )
+                            </span>
+                        }
+                    </li>
+                }
+            </ul>
+        </li>
     }
 </ol>
-@if (Linearization.Count() > 0)
+
+<b>Linearized order:</b>
+@if (Linearization.Count > 0)
 {
     <ol role="status">
         @foreach (var item in Linearization)
@@ -48,6 +100,7 @@ else
 
 @code {
     private ElementReference _inheritanceGraph;
+    private String SelectedPythonClass = "";
     
     protected override async Task OnInitializedAsync()
     {

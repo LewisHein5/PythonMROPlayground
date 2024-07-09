@@ -78,10 +78,11 @@ public partial class ClassHierarchy : ComponentBase
         try
         {
             var linearizedSuperClasses = superClasses.Select(Linearize).ToList();
-            LinearizationSteps.Add(new LinearizationStep {Class = @class, ClassesList = linearizedSuperClasses});
+            var currentLinearizationStep = new LinearizationStep { Class = @class, ClassesList = linearizedSuperClasses };
+            LinearizationSteps.Add(currentLinearizationStep);
             linearizedSuperClasses.Add(superClasses); //preserves order in C3 linearization
 
-            var merged = Merge(linearizedSuperClasses);
+            var merged = Merge(linearizedSuperClasses, ref currentLinearizationStep);
             if (merged == null)
             {
                 throw new Exception("Cannot merge");
@@ -95,7 +96,7 @@ public partial class ClassHierarchy : ComponentBase
         }
     }
 
-    private List<PythonClass>? Merge(List<List<PythonClass>> classes)
+    private List<PythonClass>? Merge(List<List<PythonClass>> classes, ref LinearizationStep currentStep)
     {
         var merged = new List<PythonClass>();
         PythonClass? candidate = null;
@@ -119,10 +120,9 @@ public partial class ClassHierarchy : ComponentBase
             classes = classes.Select(list => list.Where(@class => @class.Name != candidate.Name).ToList())
                 .Where(list => list.Count > 0)
                 .ToList();
-            //LinearizationSteps.Add(new LinearizationStep(){Class = candidate, ClassesList = classes});
             merged.Add(candidate);
+            currentStep.MergeSteps.Add(new MergeStep {UnmergedClasses = classes, MergedClasses = merged.AsEnumerable().ToList()});
         }
-       
 
         return merged;
     }
