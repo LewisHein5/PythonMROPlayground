@@ -23,12 +23,15 @@ jobs:
       - name: Install .NET WASM build tools
         run: dotnet workload install wasm-tools
       - name: Publish .NET Core project
-        run: dotnet publish ./MRO/MRO.csproj -c Release -o release --nologo
+        working-directory: ./MRO
+        run: dotnet publish MRO.csproj -c Release -o release --nologo
         
       - name: Change base-tag in index.html
+        working-directory: ./MRO
         run: sed -i 's/<base href="\/" \/>/<base href="\/PythonMROPlayground\/" \/>/g' release/wwwroot/index.html
         
       - name: Disable jekyll
+        working-directory: ./MRO
         run: touch release/wwwroot/.nojekyll
 
       - name: Commit wwwroot to GitHub Pages
