@@ -37,7 +37,10 @@ public partial class ClassHierarchy : ComponentBase
         var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
         await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
         LinearizationSteps = [];
-        Linearization = Linearize(classesList.Last());
+        if (classesList.Count() > 0)
+        {
+            Linearization = Linearize(classesList.Last());
+        }
         foreach (var l in Linearization)
         {
             Console.WriteLine(l.Name);
