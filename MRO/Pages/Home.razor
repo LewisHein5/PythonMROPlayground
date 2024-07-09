@@ -11,7 +11,7 @@
 <p>
     Python, like all object-oriented languages, allows users to define inheritance relationships between classes.
     This brings up some problems we have to solve, most notably: When more than 1 class in an inheritance hierarchy defines a method,
-    which version of the method is called? The answer to this is called the <i>method resolution order, or MRO for short</i>.
+    which version of the method is called? The answer to this is called the <i>method resolution order</i>, or MRO for short.
 </p>
 
 <p>
@@ -19,7 +19,7 @@
 </p>
 
 <div style="display: flex">
-    <div style="flex: 1">
+    <div style="width: 40vw">
         <ClassHierarchy></ClassHierarchy>
     </div>
     <div style="flex: 1">
@@ -32,14 +32,17 @@
     
     private StandaloneCodeEditor _editor = null!;
     
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    private static StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
         {
             AutomaticLayout = true,
             Language = "python",
             Theme = "vs-dark",
-            Value = ""
+            Value = "#Add a class here to get started. \n" +
+                    "#E.G.\n" +
+                    "#class A:\n" +
+                    "#    pass"
         };
     }
 
@@ -64,10 +67,9 @@
     {
         var classDefs = editorText.Split("\n").Where(line => line.StartsWith("class")).ToList();
         var pythonClasses = new List<PythonClass>(classDefs.Count);
-        var superClasses = new List<PythonClass>();
         foreach (var classDef in classDefs)
         {
-            superClasses = [];
+            List<PythonClass> superClasses = [];
             var className = Regex.Replace(classDef, @"class +([\w]*).*", "$1");
             if (Regex.IsMatch(classDef,@"class.*\((.*)\):"))
             {

@@ -3,14 +3,15 @@ using Microsoft.JSInterop;
 using MRO.Models;
 using QuikGraph;
 using QuikGraph.Graphviz;
+using QuikGraph.Graphviz.Dot;
 
 namespace MRO;
 
 public partial class ClassHierarchy : ComponentBase
 {
     private AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>> _graph = null!;
-    private List<PythonClass> Linearization = [];
-    private List<LinearizationStep> LinearizationSteps = [];
+    private List<PythonClass> _linearization = [];
+    private List<LinearizationStep> _linearizationSteps = [];
     private async void UpdateGraph(IEnumerable<PythonClass> classes)
     {
         _graph = new AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>>();
@@ -27,26 +28,22 @@ public partial class ClassHierarchy : ComponentBase
         };
         /*algorithm.FormatEdge += (_, args) =>
         {
-            var label = new GraphvizEdgeLabel();
-            label.Value = (args.Edge.Tag + 1).ToString();
+            var label = new GraphvizEdgeLabel
+            {
+                Value = (args.Edge.Tag + 1).ToString()
+            };
             args.EdgeFormat.Label = label;
         };*/
 
         var graphString = algorithm.Generate().Replace("digraph G {", "digraph G { rankdir = \"BT\"");
-        Console.WriteLine(graphString);
 
         var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
         await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
-        LinearizationSteps = [];
-        if (classesList.Count() > 0)
+        _linearizationSteps = [];
+        if (classesList.Count > 0)
         {
-            Linearization = Linearize(classesList.Last());
+            _linearization = Linearize(classesList.Last());
         }
-        /*foreach (var l in Linearization)
-        {
-            Console.WriteLine(l.Name);
-        }*/
-        //Console.WriteLine(Linearization);
         StateHasChanged();
     }
 
@@ -83,7 +80,7 @@ public partial class ClassHierarchy : ComponentBase
         {
             var linearizedSuperClasses = superClasses.Select(Linearize).ToList();
             var currentLinearizationStep = new LinearizationStep { Class = @class, ClassesList = linearizedSuperClasses };
-            LinearizationSteps.Add(currentLinearizationStep);
+            _linearizationSteps.Add(currentLinearizationStep);
             linearizedSuperClasses.Add(superClasses); //preserves order in C3 linearization
 
             var merged = Merge(linearizedSuperClasses, ref currentLinearizationStep);
@@ -100,10 +97,10 @@ public partial class ClassHierarchy : ComponentBase
         }
     }
 
-    private List<PythonClass>? Merge(List<List<PythonClass>> classes, ref LinearizationStep currentStep)
+    private static List<PythonClass>? Merge(List<List<PythonClass>> classes, ref LinearizationStep currentStep)
     {
         var merged = new List<PythonClass>();
-        PythonClass? candidate = null;
+        PythonClass? candidate;
         while (classes.Sum(x=>x.Count) > 0)
         {
             candidate = null;
