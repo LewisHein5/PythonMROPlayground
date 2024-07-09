@@ -32,7 +32,8 @@ public partial class ClassHierarchy : ComponentBase
             args.EdgeFormat.Label = label;
         };*/
 
-        var graphString = algorithm.Generate();
+        var graphString = algorithm.Generate().Replace("digraph G {", "digraph G { rankdir = \"BT\"");
+        Console.WriteLine(graphString);
 
         var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
         await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
