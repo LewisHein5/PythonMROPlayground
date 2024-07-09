@@ -41,10 +41,10 @@ public partial class ClassHierarchy : ComponentBase
         {
             Linearization = Linearize(classesList.Last());
         }
-        foreach (var l in Linearization)
+        /*foreach (var l in Linearization)
         {
             Console.WriteLine(l.Name);
-        }
+        }*/
         //Console.WriteLine(Linearization);
         StateHasChanged();
     }
@@ -67,7 +67,7 @@ public partial class ClassHierarchy : ComponentBase
     private List<PythonClass> Linearize(PythonClass @class)
     {
         if (!_graph.ContainsVertex(@class))
-            throw new ArgumentException("Invalid class");
+            return [];
 
         var superClasses = _graph.OutEdges(@class)
             .OrderBy(e => e.Tag)
