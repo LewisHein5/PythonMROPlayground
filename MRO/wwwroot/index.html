@@ -10,7 +10,12 @@
     <link rel="stylesheet" href="css/app.css" />
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="MRO.styles.css" rel="stylesheet" />
-    
+    <script language="JavaScript">
+        async function renderDot(model, element) {
+            var graphviz = d3.select(element).graphviz();
+            graphviz.renderDot(model);
+        }
+    </script>
 </head>
 
 <body>
