@@ -5,73 +5,64 @@
 
 
 <ol>
-    @if (_linearization.Any())
+    @if (_linearizationSteps.Any())
     {
-        <li>L(Object) = Object</li>
+        <li><b>L(Object)</b> = Object</li>
     }
     @foreach (var step in _linearizationSteps.AsEnumerable())
     {
         <li>
-            L(@step.Class.Name) = @step.Class.Name + merge(
-            @foreach (var classlist in step.ClassesList)
-            {
-                <span>
-                    [
-                    @foreach (var className in classlist)
-                    {
-                        if (className == classlist.Last())
+            <b>L(@step.Class.Name)</b> = @step.Class.Name + merge(@foreach (var classlist in step.ClassesList)
+                {
+                    <span>
+                        [@foreach (var className in classlist)
                         {
-                            @($" {className.Name} ")
-                        }
-                        else
-                        {
-                            @($"{className.Name}, ")
-                        }
-                    }
-                    ]
-                </span>
-            }
-            )
+                            if (className == classlist.Last())
+                            {
+                                @($"{className.Name}")
+                            }
+                            else
+                            {
+                                @($"{className.Name},")
+                            }
+                        }]
+                    </span>
+                })
             <ul class="customBulletList">
                 @foreach (var mergeStep in step.MergeSteps)
                 {
                     <li class="equalsBullet">
-                        [ @step.Class.Name,
+                        [@step.Class.Name,
                         @foreach (var className in mergeStep.MergedClasses)
                         {
                             if (className == mergeStep.MergedClasses.Last())
                             {
-                                @($" {className.Name} ")
+                                @($"{className.Name}")
                             }
                             else
                             {
-                                @($"{className.Name}, ")
+                                @($"{className.Name},")
                             }
-                        }
-                        ]
+                        }]
                         @if (mergeStep.UnmergedClasses.Count > 0)
                         {
                             <span>
-                                + merge(
-                                @foreach (var classlist in mergeStep.UnmergedClasses)
-                                {
-                                    <span>
-                                        [
-                                        @foreach (var className in classlist)
-                                        {
-                                            if (className == classlist.Last())
-                                            {
-                                                @($" {className.Name} ")
-                                            }
-                                            else
-                                            {
-                                                @($"{className.Name}, ")
-                                            }
-                                        }
-                                        ]
-                                    </span>
-                                }
-                                )
+                                + merge(<span>@foreach (var classlist in mergeStep.UnmergedClasses)
+                                              {
+                                                  <span>
+                                                      [@foreach (var className in classlist)
+                                                       {
+                                                           if (className == classlist.Last())
+                                                           {
+                                                               @($"{className.Name}")
+                                                           }
+                                                           else
+                                                           {
+                                                               @($"{className.Name},")
+                                                           }
+                                                       }]
+                                                  </span>
+                                              }</span>)
                             </span>
                         }
                     </li>
@@ -81,20 +72,24 @@
     }
 </ol>
 
-<b>Linearized order:</b>
-@if (_linearization.Count > 0)
+@if (_graph != null && _graph.VertexCount > 0)
 {
-    <ol role="group">
-        @foreach (var item in _linearization)
-        {
-            <li>@item.Name</li>
-        }
-    </ol>
+    <b>Linearized order:</b>
+    @if (_linearization.Count > 0)
+    {
+        <ol role="group">
+            @foreach (var item in _linearization)
+            {
+                <li>@item.Name</li>
+            }
+        </ol>
+    }
+    else
+    {
+        <span style="color: red">Linearization is not possible.</span>
+    }
 }
-else
-{
-    <span style="color: red">Linearization is not possible.</span>
-}
+
 
 @code {
     private ElementReference _inheritanceGraph;
