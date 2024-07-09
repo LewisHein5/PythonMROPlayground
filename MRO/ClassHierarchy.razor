@@ -1,17 +1,15 @@
-@using MRO.Models
 @using MRO.Services
-@using QuikGraph
 @inject IJSRuntime JsRuntime
 @inject UpdateService classListUpdateService;
 <div @ref="_inheritanceGraph" style="flex: 1"></div>
 
 
 <ol>
-    @if (Linearization.Count() > 0)
+    @if (_linearization.Any())
     {
         <li>L(Object) = Object</li>
     }
-    @foreach (var step in LinearizationSteps.AsEnumerable())
+    @foreach (var step in _linearizationSteps.AsEnumerable())
     {
         <li>
             L(@step.Class.Name) = @step.Class.Name + merge(
@@ -84,10 +82,10 @@
 </ol>
 
 <b>Linearized order:</b>
-@if (Linearization.Count > 0)
+@if (_linearization.Count > 0)
 {
-    <ol role="status">
-        @foreach (var item in Linearization)
+    <ol role="group">
+        @foreach (var item in _linearization)
         {
             <li>@item.Name</li>
         }
@@ -100,12 +98,12 @@ else
 
 @code {
     private ElementReference _inheritanceGraph;
-    private String SelectedPythonClass = "";
+    private string _selectedPythonClass = "";
     
     protected override async Task OnInitializedAsync()
     {
         var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
-        var diagram = "";
+        const string diagram = "";
         await diagramModule.InvokeVoidAsync("renderDot", diagram, _inheritanceGraph);
     }
 

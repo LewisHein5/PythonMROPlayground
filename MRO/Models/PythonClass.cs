@@ -17,7 +17,7 @@ public record PythonClass
     private const string ObjectName = "Object";
     private readonly List<PythonClass> _parents = [];
 
-    public PythonClass(string name)
+    private PythonClass(string name)
     {
         Name = name;
     }

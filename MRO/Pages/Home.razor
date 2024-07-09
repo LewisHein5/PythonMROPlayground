@@ -32,7 +32,7 @@
     
     private StandaloneCodeEditor _editor = null!;
     
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    private static StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
         {
@@ -64,10 +64,9 @@
     {
         var classDefs = editorText.Split("\n").Where(line => line.StartsWith("class")).ToList();
         var pythonClasses = new List<PythonClass>(classDefs.Count);
-        var superClasses = new List<PythonClass>();
         foreach (var classDef in classDefs)
         {
-            superClasses = [];
+            List<PythonClass> superClasses = [];
             var className = Regex.Replace(classDef, @"class +([\w]*).*", "$1");
             if (Regex.IsMatch(classDef,@"class.*\((.*)\):"))
             {
