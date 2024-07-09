@@ -19,7 +19,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Install .NET WASM build tools
-        run: dotnet worklod install wasm-tools
+        run: dotnet workload install wasm-tools
       - name: Publish .NET Core project
         run: dotnet publish ./MRO/MRO.csproj -c:Release -p:GHPages=true -o dist/Web --nologo
 
