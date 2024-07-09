@@ -37,7 +37,7 @@ public partial class ClassHierarchy : ComponentBase
 
         var graphString = algorithm.Generate().Replace("digraph G {", "digraph G { rankdir = \"BT\"");
 
-        var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
+        var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "diagrams.js");
         await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
         _linearizationSteps = [];
         if (classesList.Count > 0)
