@@ -102,9 +102,8 @@ else
     
     protected override async Task OnInitializedAsync()
     {
-        var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
         const string diagram = "";
-        await diagramModule.InvokeVoidAsync("renderDot", diagram, _inheritanceGraph);
+        await JsRuntime.InvokeVoidAsync("renderDot", diagram, _inheritanceGraph);
     }
 
     protected override void OnAfterRender(bool firstRender)
