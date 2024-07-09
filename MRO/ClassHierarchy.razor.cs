@@ -26,14 +26,14 @@ public partial class ClassHierarchy : ComponentBase
         {
             args.VertexFormat.Label = args.Vertex.Name;
         };
-        algorithm.FormatEdge += (_, args) =>
+        /*algorithm.FormatEdge += (_, args) =>
         {
             var label = new GraphvizEdgeLabel
             {
                 Value = (args.Edge.Tag + 1).ToString()
             };
             args.EdgeFormat.Label = label;
-        };
+        };*/
 
         var graphString = algorithm.Generate().Replace("digraph G {", "digraph G { rankdir = \"BT\"");
 
