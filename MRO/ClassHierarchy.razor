@@ -5,12 +5,46 @@
 @inject UpdateService classListUpdateService;
 <div @ref="_inheritanceGraph" style="flex: 1"></div>
 
-<ol role="status">
-    @foreach (var item in Linearization)
+<ol>
+    @foreach (var step in LinearizationSteps.AsEnumerable())
     {
-        <li>@item.Name</li>
+    <li>
+        L(@step.Class.Name) = @step.Class.Name + merge(
+        @foreach (var classlist in step.ClassesList)
+        {
+        <span>
+                        [
+            @foreach (var className in classlist)
+            {
+            if (className == classlist.Last())
+            {
+            @($" {className.Name} ")
+            }
+            else
+            {
+            @($"{className.Name}, ")
+            }
+            }
+            ]
+                    </span>
+        }
+        )
+    </li>
     }
 </ol>
+@if (Linearization.Count() > 0)
+{
+    <ol role="status">
+        @foreach (var item in Linearization)
+        {
+            <li>@item.Name</li>
+        }
+    </ol>
+}
+else
+{
+    <span style="color: red">Linearization is not possible.</span>
+}
 
 @code {
     private ElementReference _inheritanceGraph;

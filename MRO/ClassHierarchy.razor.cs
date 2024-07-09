@@ -10,6 +10,7 @@ public partial class ClassHierarchy : ComponentBase
 {
     private AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>> _graph = null!;
     private List<PythonClass> Linearization = [];
+    private List<LinearizationStep> LinearizationSteps = [];
     private async void UpdateGraph(IEnumerable<PythonClass> classes)
     {
         _graph = new AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>>();
@@ -24,11 +25,18 @@ public partial class ClassHierarchy : ComponentBase
         {
             args.VertexFormat.Label = args.Vertex.Name;
         };
+        /*algorithm.FormatEdge += (_, args) =>
+        {
+            var label = new GraphvizEdgeLabel();
+            label.Value = (args.Edge.Tag + 1).ToString();
+            args.EdgeFormat.Label = label;
+        };*/
 
         var graphString = algorithm.Generate();
 
         var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
         await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
+        LinearizationSteps = [];
         Linearization = Linearize(classesList.Last());
         foreach (var l in Linearization)
         {
@@ -70,6 +78,7 @@ public partial class ClassHierarchy : ComponentBase
         try
         {
             var linearizedSuperClasses = superClasses.Select(Linearize).ToList();
+            LinearizationSteps.Add(new LinearizationStep {Class = @class, ClassesList = linearizedSuperClasses});
             linearizedSuperClasses.Add(superClasses); //preserves order in C3 linearization
 
             var merged = Merge(linearizedSuperClasses);
@@ -110,6 +119,7 @@ public partial class ClassHierarchy : ComponentBase
             classes = classes.Select(list => list.Where(@class => @class.Name != candidate.Name).ToList())
                 .Where(list => list.Count > 0)
                 .ToList();
+            //LinearizationSteps.Add(new LinearizationStep(){Class = candidate, ClassesList = classes});
             merged.Add(candidate);
         }
        
