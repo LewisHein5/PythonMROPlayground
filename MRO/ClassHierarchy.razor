@@ -74,7 +74,7 @@
 
 @if (_graph != null && _graph.VertexCount > 0)
 {
-    <b>Linearized order:</b>
+    <b>Linearized order: </b>
     @if (_linearization.Count > 0)
     {
         <ol role="group">
@@ -86,7 +86,7 @@
     }
     else
     {
-        <span style="color: red">Linearization is not possible.</span>
+        <span style="color: red"><b>Linearization is not possible.</b></span>
     }
 }
 

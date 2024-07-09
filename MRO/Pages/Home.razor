@@ -24,7 +24,7 @@
         <ClassHierarchy></ClassHierarchy>
     </div>
     <div style="flex: 1">
-        <StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="Callback"></StandaloneCodeEditor>
+        <StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="OnTextChangedAsync" OnDidInit="OnInitDoneAsync"></StandaloneCodeEditor>
     </div>
 </div>
 
@@ -42,12 +42,12 @@
             Theme = "vs-dark",
             Value = "# Add some classes here to get started. \n" +
                     "# E.G.\n" +
-                    "#class A:\n" +
-                    "#    pass\n" +
-                    "#class B(A):\n" +
-                    "#    pass\n" + 
-                    "#class C(B,A):\n"+
-                    "#    pass\n" +
+                    "class A:\n" +
+                    "    pass\n" +
+                    "class B(A):\n" +
+                    "    pass\n" + 
+                    "class C(B,A):\n"+
+                    "    pass\n" +
                     "# Did you know Python will show the MRO for any object? \n# Go to a python console and try: int.__mro__"
         };
     }
@@ -63,7 +63,13 @@
             
     }
 
-    private async void Callback(ModelContentChangedEvent obj)
+    private async void OnTextChangedAsync(ModelContentChangedEvent obj)
+    {
+        var editorText = await _editor.GetValue();
+        updateService.UpdateClassList(ParseClasses(editorText));
+    }
+
+    private async void OnInitDoneAsync()
     {
         var editorText = await _editor.GetValue();
         updateService.UpdateClassList(ParseClasses(editorText));
