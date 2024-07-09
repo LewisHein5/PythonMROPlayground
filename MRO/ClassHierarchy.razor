@@ -1,0 +1,31 @@
+@using MRO.Models
+@using MRO.Services
+@using QuikGraph
+@inject IJSRuntime JsRuntime
+@inject UpdateService classListUpdateService;
+<div @ref="_inheritanceGraph" style="flex: 1"></div>
+
+<ol role="status">
+    @foreach (var item in Linearization)
+    {
+        <li>@item.Name</li>
+    }
+</ol>
+
+@code {
+    private ElementReference _inheritanceGraph;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
+        var diagram = "";
+        await diagramModule.InvokeVoidAsync("renderDot", diagram, _inheritanceGraph);
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+        if (!firstRender) return;
+        classListUpdateService.CodeChangedEvent += UpdateGraph;
+    }
+}

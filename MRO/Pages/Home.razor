@@ -1,0 +1,92 @@
+﻿@inject UpdateService updateService;
+@page "/"
+@using System.Text.RegularExpressions
+@using MRO.Models
+@using MRO.Services
+
+<PageTitle>Home</PageTitle>
+
+<h1>Python MRO demonstration</h1>
+
+<div style="display: flex">
+    <div style="flex: 1">
+        <ClassHierarchy></ClassHierarchy>
+    </div>
+    <div style="flex: 1">
+        <StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="Callback"></StandaloneCodeEditor>
+    </div>
+</div>
+
+@code
+{
+    
+    private StandaloneCodeEditor _editor = null!;
+    
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+        {
+            AutomaticLayout = true,
+            Language = "python",
+            Theme = "vs-dark",
+            Value = "class A:\n\tpass"
+        };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await base.OnAfterRenderAsync(firstRender);
+        if (!firstRender)
+        {
+            var editorText = await _editor.GetValue();
+            updateService.UpdateClassList(ParseClasses(editorText));
+        }
+            
+    }
+
+    private async void Callback(ModelContentChangedEvent obj)
+    {
+        var editorText = await _editor.GetValue();
+        updateService.UpdateClassList(ParseClasses(editorText));
+    }
+
+    private static List<PythonClass> ParseClasses(string editorText)
+    {
+        var classDefs = editorText.Split("\n").Where(line => line.StartsWith("class")).ToList();
+        var pythonClasses = new List<PythonClass>(classDefs.Count);
+        var superClasses = new List<PythonClass>();
+        foreach (var classDef in classDefs)
+        {
+            superClasses = [];
+            var className = Regex.Replace(classDef, @"class +([\w]*).*", "$1");
+            if (Regex.IsMatch(classDef,@"class.*\((.*)\):"))
+            {
+                var superClassNames = Regex.Replace(classDef, @"class.*\((.*)\):", "$1")
+                    .Split(",")
+                    .Select(s => s.Trim())
+                    .ToList();
+                superClasses = new List<PythonClass>(superClassNames.Count);
+                if (pythonClasses.Count == 0 && superClasses.Count > 0)
+                    return [];
+                foreach (var superClassName in superClassNames)
+                {
+                    //If the class is defined before its parents, this is an error
+                    if (pythonClasses.All(c => c.Name != superClassName))
+                    {
+                        return [];
+                    }
+
+                    var superClass = pythonClasses.First(c => c.Name == superClassName);
+                    superClasses.Add(superClass);
+                }
+            }
+            
+            //If the class has already been defined, we are re-defining it, which is an error
+            if (pythonClasses.Any(c => c.Name == className))
+                return [];
+            pythonClasses.Add(new PythonClass(className, superClasses));
+        }
+
+        return pythonClasses;
+    }
+}
