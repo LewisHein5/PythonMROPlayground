@@ -104,7 +104,7 @@ code {
 
 
 .monaco-editor-container { /* for all editor instances */
-    height: 80vh;
+    height: 60vh;
 }
 
 ul.customBulletList {

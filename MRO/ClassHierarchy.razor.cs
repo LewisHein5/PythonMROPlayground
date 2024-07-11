@@ -3,13 +3,12 @@ using Microsoft.JSInterop;
 using MRO.Models;
 using QuikGraph;
 using QuikGraph.Graphviz;
-using QuikGraph.Graphviz.Dot;
 
 namespace MRO;
 
 public partial class ClassHierarchy : ComponentBase
 {
-    private AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>> _graph = null!;
+    private AdjacencyGraph<PythonClass, TaggedEdge<PythonClass, int>>? _graph = null;
     private List<PythonClass> _linearization = [];
     private List<LinearizationStep> _linearizationSteps = [];
     private async void UpdateGraph(IEnumerable<PythonClass> classes)
@@ -37,8 +36,7 @@ public partial class ClassHierarchy : ComponentBase
 
         var graphString = algorithm.Generate().Replace("digraph G {", "digraph G { rankdir = \"BT\"");
 
-        var diagramModule = await JsRuntime.InvokeAsync<IJSObjectReference>("import", "/diagrams.js");
-        await diagramModule.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
+        await JsRuntime.InvokeVoidAsync("renderDot", graphString, _inheritanceGraph);
         _linearizationSteps = [];
         if (classesList.Count > 0)
         {
@@ -49,6 +47,8 @@ public partial class ClassHierarchy : ComponentBase
 
     private void AddClassToGraph(PythonClass pythonClass)
     {
+        if (_graph == null)
+            return;
         _graph.AddVertex(pythonClass);
         var i = 0;
         foreach (var parent in pythonClass.Parents)
@@ -64,6 +64,8 @@ public partial class ClassHierarchy : ComponentBase
     
     private List<PythonClass> Linearize(PythonClass @class)
     {
+        if (_graph == null)
+            return [];
         if (!_graph.ContainsVertex(@class))
             return [];
 

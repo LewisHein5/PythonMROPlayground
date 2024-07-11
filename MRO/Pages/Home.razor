@@ -11,19 +11,21 @@
 <p>
     Python, like all object-oriented languages, allows users to define inheritance relationships between classes.
     This brings up some problems we have to solve, most notably: When more than 1 class in an inheritance hierarchy defines a method,
-    which version of the method is called? The answer to this is called the <i>method resolution order</i>, or MRO for short.
+    which version of the method is called? The answer to this is to linearly order the class hierarchy and search each class
+    in sequence. The order we apply is called the <i>method resolution order</i>, or MRO for short.
 </p>
 
 <p>
-    To start exploring, define a class in the editor below.
+    To start exploring, define a class in the text box below.
 </p>
 
 <div style="display: flex">
+    <div style="flex: 1">
+        <StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="OnTextChangedAsync" OnDidInit="OnInitDoneAsync"></StandaloneCodeEditor>
+    </div>
+    <div style="width: 4vw"></div>
     <div style="width: 40vw">
         <ClassHierarchy></ClassHierarchy>
-    </div>
-    <div style="flex: 1">
-        <StandaloneCodeEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" OnDidChangeModelContent="Callback"></StandaloneCodeEditor>
     </div>
 </div>
 
@@ -39,10 +41,15 @@
             AutomaticLayout = true,
             Language = "python",
             Theme = "vs-dark",
-            Value = "#Add a class here to get started. \n" +
-                    "#E.G.\n" +
-                    "#class A:\n" +
-                    "#    pass"
+            Value = "# This is a code editor. Add some classes here to get started. \n" +
+                    "# E.G.\n" +
+                    "class A:\n" +
+                    "    pass\n" +
+                    "class B(A):\n" +
+                    "    pass\n" + 
+                    "class C(B,A):\n"+
+                    "    pass\n" +
+                    "# Did you know Python will show the MRO for any object? \n# Go to a python console and try: int.__mro__"
         };
     }
 
@@ -57,7 +64,13 @@
             
     }
 
-    private async void Callback(ModelContentChangedEvent obj)
+    private async void OnTextChangedAsync(ModelContentChangedEvent obj)
+    {
+        var editorText = await _editor.GetValue();
+        updateService.UpdateClassList(ParseClasses(editorText));
+    }
+
+    private async void OnInitDoneAsync()
     {
         var editorText = await _editor.GetValue();
         updateService.UpdateClassList(ParseClasses(editorText));

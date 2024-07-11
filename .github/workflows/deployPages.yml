@@ -1,0 +1,39 @@
+name: Deploy to Github pages
+
+on:
+  push:
+    branches:
+     - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy-to-github-pages:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup .NET Core SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install .NET WASM build tools
+        run: dotnet workload install wasm-tools
+      - name: Publish .NET Core project
+        run: dotnet publish ./MRO/MRO.csproj -c Release -p:PublishTrimmed=false -o release --nologo
+        
+      - name: Change base-tag in index.html
+        run: sed -i 's/<base href="\/" \/>/<base href="\/PythonMROPlayground\/" \/>/g' release/wwwroot/index.html
+        
+      - name: Disable jekyll
+        run: touch release/wwwroot/.nojekyll
+
+      - name: Commit wwwroot to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: release/wwwroot
