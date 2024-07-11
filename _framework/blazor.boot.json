@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "MRO",
   "resources": {
-    "hash": "sha256-QZgWr1ZF68mHOMzjwAx5/Si1cGeSO6e2CL7WeAHuJkY=",
+    "hash": "sha256-KSsqrHCgn2pvZK1W/+7pyRP/bnkrUWixlZ7DZrZY6jQ=",
     "jsModuleNative": {
       "dotnet.native.8.0.7.m7qa7vz601.js": "sha256-tFsxPBbhkdn6GKNBKvCRLzrfAHdyM86odYTe0MtrwMk="
     },
@@ -45,7 +45,7 @@
       "Microsoft.VisualBasic.wasm": "sha256-atrkkpXu/7adUk4nodQdTZjqNCaEtzmo+DNqOLy8mTE=",
       "Microsoft.Win32.Primitives.wasm": "sha256-SZKRKlq5MfXtFqCBukdLkfv0T3Fl5AGB0TKfxoQMyEk=",
       "Microsoft.Win32.Registry.wasm": "sha256-FKl0AkZHG3T0T5xqcueexkuFF7GZAGkeHpt/JpnirAQ=",
-      "MRO.wasm": "sha256-5iUeMhyTPnA99xgMdMSX/NkRk/uN3DeVX127QKx7kcg=",
+      "MRO.wasm": "sha256-4DOOkvMj9rC0WDMkPFbSzOVie7ZLO1/enQ4wqZg1BTA=",
       "mscorlib.wasm": "sha256-fLbZiSHBNdpHoh4EgRqMaNP5NQyIK5TEj6AXFLqo8m8=",
       "netstandard.wasm": "sha256-d4xbAE8qrKq5euUoZHPO+jkYPjlCYBzUew45MKsYKic=",
       "QuikGraph.Graphviz.wasm": "sha256-Jn6KslNjxggzcy5dDQDwcp8DplhsGdXWHG9Cqr3rIgI=",
