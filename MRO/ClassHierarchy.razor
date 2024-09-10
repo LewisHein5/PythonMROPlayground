@@ -1,3 +1,4 @@
+@using MRO.Models
 @using MRO.Services
 @inject IJSRuntime JsRuntime
 @inject UpdateService classListUpdateService;
@@ -7,7 +8,7 @@
 <ol>
     @if (_linearizationSteps.Any())
     {
-        <li><b>L(Object)</b> = Object</li>
+        <li><b>L(@(PythonClass.ObjectName))</b> = @(PythonClass.ObjectName)</li>
     }
     @foreach (var step in _linearizationSteps.AsEnumerable())
     {
