@@ -14,7 +14,7 @@ public record PythonClass
         return Name.GetHashCode();
     }
 
-    private const string ObjectName = "Object";
+    private const string ObjectName = "object";
     private readonly List<PythonClass> _parents = [];
 
     private PythonClass(string name)
